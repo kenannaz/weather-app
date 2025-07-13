@@ -71,20 +71,30 @@
 <div class="container">
   <h2>Weather Checker</h2>
 
-  <div id="login-section">
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
-    <button onclick="signup()">Sign Up</button>
-  </div>
+<!-- Login form section -->
+<div id="login-section">
+  <!-- Email input field -->
+  <input type="email" id="email" placeholder="Email" />
+  <!-- Password input field -->
+  <input type="password" id="password" placeholder="Password" />
+  <!-- Button to log in -->
+  <button onclick="login()">Login</button>
+  <!-- Button to create a new account -->
+  <button onclick="signup()">Sign Up</button>
+</div>
 
-  <div id="app-section" class="hidden">
-    <input type="text" id="city" placeholder="Enter city..." oninput="suggestCities()" autocomplete="off" />
-    <div id="suggestions"></div>
-    <button onclick="getWeather()">Check Weather</button>
-    <div id="weather-info"></div>
-    <button onclick="logout()">Logout</button>
-  </div>
+<!-- Main app section (hidden until login) -->
+<div id="app-section" class="hidden">
+  <!-- Input field to type city name -->
+  <input type="text" id="city" placeholder="Enter city..." oninput="suggestCities()" autocomplete="off" />
+  <!-- Box to show city suggestions -->
+  <div id="suggestions"></div>
+  <!-- Button to check weather -->
+  <button onclick="getWeather()">Check Weather</button>
+  <!-- Box to display weather information -->
+  <div id="weather-info"></div>
+  <!-- Button to log out -->
+  <button onclick="logout()">Logout</button>
 </div>
 
 <!-- Firebase -->
@@ -92,16 +102,25 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-  // 🚨 INSERT YOUR FIREBASE CONFIG BELOW
- const firebaseConfig = {
-  apiKey: "AIzaSyC_4qPtEV2HplweeVArEnsubXGoHtut1dI",
-  authDomain: "weatherapp-7c49b.firebaseapp.com",
-  projectId: "weatherapp-7c49b",
-  storageBucket: "weatherapp-7c49b.firebasestorage.app",
-  messagingSenderId: "718121942864",
-  appId: "1:718121942864:web:8add941c1b3faf74943655",
-  measurementId: "G-H1DSL4F5BC"
-};
+// Firebase project configuration settings
+  const firebaseConfig = {
+    // API key used to access Firebase services
+    apiKey: "AIzaSyC_4qPtEV2HplweeVArEnsubXGoHtut1dI",
+    // Authorized domain for Firebase Authentication
+    authDomain: "weatherapp-7c49b.firebaseapp.com",
+    // Unique ID of the Firebase project
+    projectId: "weatherapp-7c49b",
+    // Cloud Storage location for this project
+    storageBucket: "weatherapp-7c49b.firebasestorage.app",
+    // ID for Firebase Cloud Messaging
+    messagingSenderId: "718121942864",
+    // App identifier used across Firebase services
+    appId: "1:718121942864:web:8add941c1b3faf74943655",
+    // Measurement ID for analytics (optional)
+    measurementId: "G-H1DSL4F5BC"
+  };
+  
+
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
@@ -163,41 +182,56 @@
     });
   }
 
-  async function getWeather() {
-    const city = selectedCity || document.getElementById("city").value;
+// Gets weather data for the selected or typed city
+async function getWeather() {
+  // Get the selected city or the value typed in the input field
+  const city = selectedCity || document.getElementById("city").value;
 
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHER_API_KEY}&units=metric`;
+  // Build the API URL using the city name and API key
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHER_API_KEY}&units=metric`;
 
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
+  try {
+    // Send request to the weather API
+    const res = await fetch(url);
+    const data = await res.json();
 
-      if (data.cod !== 200) throw new Error(data.message);
+    // If the API returns an error (e.g., city not found), throw an error
+    if (data.cod !== 200) throw new Error(data.message);
 
-      document.getElementById('weather-info').innerHTML = `
-        <h3>${data.name}, ${data.sys.country}</h3>
-        <p>Temperature: ${data.main.temp} °C</p>
-        <p>Humidity: ${data.main.humidity}%</p>
-        <p>Wind Speed: ${data.wind.speed} m/s</p>
-        <p>Weather: ${data.weather[0].description}</p>
-      `;
-      updateBackground(data.weather[0].main.toLowerCase());
-    } catch (err) {
-      document.getElementById('weather-info').innerHTML = `<p>Error: ${err.message}</p>`;
-    }
+    // Show weather information on the page
+    document.getElementById('weather-info').innerHTML = `
+      <h3>${data.name}, ${data.sys.country}</h3>
+      <p>Temperature: ${data.main.temp} °C</p>
+      <p>Humidity: ${data.main.humidity}%</p>
+      <p>Wind Speed: ${data.wind.speed} m/s</p>
+      <p>Weather: ${data.weather[0].description}</p>
+    `;
+
+    // Change the background based on the weather condition
+    updateBackground(data.weather[0].main.toLowerCase());
+  } catch (err) {
+    // Show error message if something goes wrong
+    document.getElementById('weather-info').innerHTML = `<p>Error: ${err.message}</p>`;
   }
+}
 
-  function updateBackground(condition) {
+
+ // Changes the background image based on the weather condition
+function updateBackground(condition) {
+  // Set a default image in case no condition matches
   let image = "default.jpg";
 
+  // Check the condition and choose the matching image
   if (condition.includes("cloud")) image = "clouds.jpg";
   else if (condition.includes("rain")) image = "rain.jpg";
   else if (condition.includes("clear")) image = "clear.jpg";
   else if (condition.includes("snow")) image = "snow.jpg";
   else if (condition.includes("storm") || condition.includes("thunder")) image = "storm.jpg";
 
+  // Set the selected image as the background
   document.body.style.backgroundImage = `url('backgrounds/${image}')`;
 }
+
 
 </script>
 
